@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <texts>
+        <text name="vd_modName" text="Vehicle Delivery"/>
+        <text name="vd_pageTitle" text="Vehicle Delivery"/>
+        <text name="vd_colBrand" text="Brand"/>
+        <text name="vd_colMachine" text="Machine"/>
+        <text name="vd_notifyCancelled" text="Order cancelled: %s"/>
+        <text name="vd_cancelButton" text="Cancel order"/>
+        <text name="vd_cancelFull" text="Cancel order “%s”?\n\nThe full vehicle amount already paid will be refunded: %s"/>
+        <text name="vd_cancelDamage" text="Cancel order “%s”?\n\nThe vehicle is already in transit.\nYou get %s back (damages: %s)."/>
+        <text name="vd_cancelPenalty" text="Cancel order “%s”?\n\nArriving soon! The vehicle amount already paid (%s) is forfeited and a penalty of %s applies.\n\nReally cancel?"/>
+        <text name="vd_cancelNoOrder" text="No order selected."/>
+        <text name="vd_colStatus" text="Status"/>
+        <text name="vd_statusPlaced" text="Order placed"/>
+        <text name="vd_statusProduction" text="In production"/>
+        <text name="vd_statusShipped" text="In transit"/>
+        <text name="vd_statusDelayed" text="Delayed"/>
+        <text name="vd_notifyDelayed" text="The delivery of %s is delayed by %d day(s)."/>
+        <text name="vd_delaysLabel" text="Delivery delays (random)"/>
+        <text name="vd_statusAwaitingPayment" text="Awaiting payment"/>
+        <text name="vd_notifyAwaitingPayment" text="Delivery on hold: payment including customs for %s not covered"/>
+        <text name="vd_statusArriving" text="Arriving soon"/>
+        <text name="vd_colTravel" text="Route"/>
+        <text name="vd_colRemaining" text="Remaining"/>
+        <text name="vd_emptyList" text="No deliveries are currently on the way."/>
+        <text name="vd_downpaymentLabel" text="Down payment (20%, rest on delivery)"/>
+        <text name="vd_on" text="On"/>
+        <text name="vd_off" text="Off"/>
+        <text name="vd_regionLabel" text="Your farm's region"/>
+        <text name="vd_daySingular" text="day"/>
+        <text name="vd_dayPlural" text="days"/>
+        <text name="vd_regionEU" text="Europe"/>
+        <text name="vd_regionNA" text="North America"/>
+        <text name="vd_regionSA" text="South America"/>
+        <text name="vd_regionAS" text="Asia"/>
+        <text name="vd_regionAF" text="Africa"/>
+        <text name="vd_regionOC" text="Oceania"/>
+        <text name="vd_notifyOrdered" text="%s: delivery in %d day(s)"/>
+        <text name="vd_travelLabel" text="Transport route"/>
+        <text name="vd_travelLocal" text="Locally in %s"/>
+        <text name="vd_deliveryTimeLabel" text="Delivery time"/>
+        <text name="vd_confirmDownpayment" text="Down payment now: %s\nRest on delivery: %s"/>
+        <text name="vd_confirmTravel" text="Transport route: %s"/>
+        <text name="vd_confirmOrder" text="This vehicle will be delivered in %d day(s).\n\nPlace the order?"/>
+        <text name="vd_deliveryImmediate" text="Immediately available"/>
+        <text name="vd_deliveryDays" text="%d day(s)"/>
+        <text name="vd_notifyDelivered" text="%s has been delivered"/>
+        <text name="vd_customsLabel" text="Customs duties (by origin and destination)"/>
+        <text name="vd_confirmDelivery" text="This vehicle will be delivered in %d day(s)."/>
+        <text name="vd_confirmVehiclePrice" text="Vehicle price: %s"/>
+        <text name="vd_confirmCustoms" text="Customs duties (%s%%): %s (on delivery)"/>
+        <text name="vd_confirmCustomsDisabled" text="Customs duties: disabled (%s)"/>
+        <text name="vd_confirmTotal" text="Total price including customs: %s"/>
+        <text name="vd_confirmPayNow" text="Payment now: %s"/>
+        <text name="vd_confirmPayOnDelivery" text="Due on delivery (including customs): %s"/>
+        <text name="vd_confirmPlaceOrder" text="Place the order?"/>
+        <text name="vd_orderCustoms" text="Customs (%s%%): %s"/>
+        <text name="vd_orderPayOnDelivery" text="Due on delivery incl. customs: %s"/>
+        <text name="vd_cancelNoCustoms" text="No customs duties are charged for cancelled orders."/>
+        <text name="vd_notifyDeliveryFailed" text="Delivery of %s failed. The order is preserved; no payment was retained."/>
+    </texts>
+</l10n>

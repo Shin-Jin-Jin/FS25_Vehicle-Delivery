@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <texts>
+        <text name="vd_modName" text="Livraison de véhicules"/>
+        <text name="vd_pageTitle" text="Livraison de véhicules"/>
+        <text name="vd_colBrand" text="Marque"/>
+        <text name="vd_colMachine" text="Machine"/>
+        <text name="vd_notifyCancelled" text="Commande annulée : %s"/>
+        <text name="vd_cancelButton" text="Annuler"/>
+        <text name="vd_cancelFull" text="Annuler la commande « %s » ?\n\nLe montant du véhicule déjà payé est entièrement remboursé : %s"/>
+        <text name="vd_cancelDamage" text="Annuler la commande « %s » ?\n\nLe véhicule est déjà en route.\nVous récupérez %s (dédommagement : %s)."/>
+        <text name="vd_cancelPenalty" text="Annuler la commande « %s » ?\n\nBientôt livré ! Le montant du véhicule déjà payé (%s) est perdu et une pénalité de %s s’applique.\n\nVraiment annuler ?"/>
+        <text name="vd_cancelNoOrder" text="Aucune commande sélectionnée."/>
+        <text name="vd_colStatus" text="Statut"/>
+        <text name="vd_statusPlaced" text="Commande passée"/>
+        <text name="vd_statusProduction" text="En production"/>
+        <text name="vd_statusShipped" text="En transit"/>
+        <text name="vd_statusDelayed" text="Retardé"/>
+        <text name="vd_notifyDelayed" text="La livraison de %s est retardée de %d jour(s)."/>
+        <text name="vd_delaysLabel" text="Retards de livraison (aléatoires)"/>
+        <text name="vd_statusAwaitingPayment" text="En attente de paiement"/>
+        <text name="vd_notifyAwaitingPayment" text="Livraison en attente : paiement, douane comprise, de %s non couvert"/>
+        <text name="vd_statusArriving" text="Bientôt livré"/>
+        <text name="vd_colTravel" text="Itinéraire"/>
+        <text name="vd_colRemaining" text="Restant"/>
+        <text name="vd_emptyList" text="Aucune livraison n'est en cours actuellement."/>
+        <text name="vd_downpaymentLabel" text="Acompte (20%, reste à la livraison)"/>
+        <text name="vd_on" text="Activé"/>
+        <text name="vd_off" text="Désactivé"/>
+        <text name="vd_regionLabel" text="Région de votre ferme"/>
+        <text name="vd_daySingular" text="jour"/>
+        <text name="vd_dayPlural" text="jours"/>
+        <text name="vd_regionEU" text="Europe"/>
+        <text name="vd_regionNA" text="Amérique du Nord"/>
+        <text name="vd_regionSA" text="Amérique du Sud"/>
+        <text name="vd_regionAS" text="Asie"/>
+        <text name="vd_regionAF" text="Afrique"/>
+        <text name="vd_regionOC" text="Océanie"/>
+        <text name="vd_notifyOrdered" text="%s : livraison dans %d jour(s)"/>
+        <text name="vd_travelLabel" text="Itinéraire de transport"/>
+        <text name="vd_travelLocal" text="Sur place en %s"/>
+        <text name="vd_deliveryTimeLabel" text="Délai de livraison"/>
+        <text name="vd_confirmDownpayment" text="Acompte maintenant : %s\nReste à la livraison : %s"/>
+        <text name="vd_confirmTravel" text="Itinéraire : %s"/>
+        <text name="vd_confirmOrder" text="Ce véhicule sera livré dans %d jour(s).\n\nPasser la commande ?"/>
+        <text name="vd_deliveryImmediate" text="Disponible immédiatement"/>
+        <text name="vd_deliveryDays" text="%d jour(s)"/>
+        <text name="vd_notifyDelivered" text="%s a été livré"/>
+        <text name="vd_customsLabel" text="Droits de douane (selon origine et destination)"/>
+        <text name="vd_confirmDelivery" text="Ce véhicule sera livré dans %d jour(s)."/>
+        <text name="vd_confirmVehiclePrice" text="Prix du véhicule : %s"/>
+        <text name="vd_confirmCustoms" text="Droits de douane (%s%%) : %s (à la livraison)"/>
+        <text name="vd_confirmCustomsDisabled" text="Droits de douane : désactivés (%s)"/>
+        <text name="vd_confirmTotal" text="Prix total, douane comprise : %s"/>
+        <text name="vd_confirmPayNow" text="Paiement maintenant : %s"/>
+        <text name="vd_confirmPayOnDelivery" text="Dû à la livraison (douane comprise) : %s"/>
+        <text name="vd_confirmPlaceOrder" text="Passer la commande ?"/>
+        <text name="vd_orderCustoms" text="Douane (%s%%) : %s"/>
+        <text name="vd_orderPayOnDelivery" text="Dû à la livraison, douane comprise : %s"/>
+        <text name="vd_cancelNoCustoms" text="Aucun droit de douane ne sera facturé en cas d’annulation."/>
+        <text name="vd_notifyDeliveryFailed" text="La livraison de %s a échoué. La commande est conservée ; aucun paiement n’a été retenu."/>
+    </texts>
+</l10n>

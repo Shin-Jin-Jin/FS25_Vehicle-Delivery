@@ -1,0 +1,7 @@
+# Build-Artefakte
+*.zip
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp

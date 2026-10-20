@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<GUI name="VehicleDeliveryPage" returnScreenCallback="onClickBack">
+    <GuiElement profile="vd_mainContainer">
+
+        <!-- Kopfzeile mit Titel -->
+        <GuiElement profile="fs25_menuHeaderPanel" size="0.805 0.1" position="0.0 0.074">
+            <Text profile="fs25_menuHeaderTitle" id="categoryHeaderText" text="$l10n_vd_pageTitle"/>
+        </GuiElement>
+
+        <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" size="0.83 0.003"/>
+
+        <!-- Spaltenueberschriften -->
+        <GuiElement profile="vd_listHeaderRow" size="0.83 0.0" position="0.0 -0.02">
+            <Button profile="vd_listHeader" position="110px 0px" text="$l10n_vd_colBrand" handleFocus="false"/>
+            <Button profile="vd_listHeader" position="430px 0px" text="$l10n_vd_colMachine" handleFocus="false"/>
+            <Button profile="vd_listHeader" position="880px 0px" text="$l10n_vd_colStatus" handleFocus="false"/>
+            <Button profile="vd_listHeader" position="1290px 0px" text="$l10n_vd_colRemaining" handleFocus="false"/>
+            <ThreePartBitmap profile="fs25_lineSeparatorTop"/>
+        </GuiElement>
+
+        <!-- Liste der offenen Auftraege -->
+        <GuiElement profile="vd_orderListContainer">
+            <SmoothList id="orderList" visible="true">
+                <ListItem profile="vd_orderListItem" name="default">
+                    <Bitmap profile="vd_orderImage" name="itemImage"
+                            position="20px 0" size="60px 34px"/>
+                    <Text profile="vd_orderBrandText" name="brandText"
+                          textAlignment="left" textVerticalAlignment="center"
+                          position="110px -6px" size="300px 24px"/>
+                    <Text profile="vd_orderMachineText" name="machineText"
+                          textAlignment="left" textVerticalAlignment="center"
+                          position="430px -6px" size="420px 24px"/>
+                    <Text profile="vd_orderTravelText" name="travelText"
+                          textAlignment="left" textVerticalAlignment="center"
+                          position="880px -6px" size="390px 24px"/>
+                    <Text profile="vd_orderDaysText" name="daysText"
+                          textAlignment="left" textVerticalAlignment="center"
+                          position="1290px -6px" size="200px 24px"/>
+                    <Text profile="vd_orderDetailText" name="routeText"
+                          position="110px -38px" size="300px 22px"/>
+                    <Text profile="vd_orderDetailText" name="customsText"
+                          position="430px -38px" size="420px 22px"/>
+                    <Text profile="vd_orderPaymentText" name="paymentText"
+                          position="880px -38px" size="610px 22px"/>
+                </ListItem>
+            </SmoothList>
+
+            <ThreePartBitmap profile="fs25_listSliderBox" with="anchorTopRight">
+                <Slider profile="fs25_listSlider" dataElementId="orderList"/>
+            </ThreePartBitmap>
+        </GuiElement>
+
+        <!-- Hinweis wenn keine Auftraege offen -->
+        <Text profile="vd_emptyText" id="emptyText"
+              text="$l10n_vd_emptyList"
+              position="0.0 0.0" size="0.83 0.05" visible="false"/>
+
+    </GuiElement>
+</GUI>

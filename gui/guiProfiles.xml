@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUIProfiles>
+    <Profile name="vd_mainContainer" extends="fs25_menuContainer" with="anchorMiddleLeft">
+        <position value="134px -0.03" />
+    </Profile>
+
+    <Profile name="vd_placeholderText" extends="baseReference" with="anchorMiddleCenter">
+        <textBold value="true" />
+        <textSize value="22px" />
+        <textAlignment value="center" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+    </Profile>
+
+    <!-- Spaltenueberschriften-Zeile -->
+    <Profile name="vd_listHeaderRow" extends="fs25_statisticsHeaderBox" />
+
+    <Profile name="vd_listHeader" extends="baseReference" with="anchorStretchingYLeft">
+        <imageColor value="0 0 0 0" />
+        <textSize value="16px" />
+        <textBold value="true" />
+        <textUpperCase value="true" />
+        <textColor value="$preset_colorWhite_50" />
+        <textAlignment value="left" />
+        <textOffset value="0px 0px" />
+    </Profile>
+
+    <!-- Container fuer die Liste -->
+    <Profile name="vd_orderListContainer" extends="baseReference" with="anchorBottomLeft">
+        <position value="0.0 0.0" />
+        <size value="0.83 0.72" />
+    </Profile>
+
+    <!-- Eine Listenzeile -->
+    <Profile name="vd_orderListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+        <height value="70px"/>
+        <imageColor value="$preset_fs25_colorGrey" />
+        <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+        <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
+
+    <Profile name="vd_orderImage" extends="baseReference" with="anchorMiddleLeft">
+        <imageColor value="1 1 1 1" />
+    </Profile>
+
+    <Profile name="vd_orderBrandText" extends="baseReference" with="anchorTopLeft">
+        <textBold value="true" />
+        <textSize value="17px" />
+        <textAlignment value="left" />
+        <textLayoutMode value="truncate" />
+        <textColor value="$preset_fs25_colorMainLight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+
+    <Profile name="vd_orderMachineText" extends="baseReference" with="anchorTopLeft">
+        <textBold value="true" />
+        <textSize value="17px" />
+        <textAlignment value="left" />
+        <textLayoutMode value="truncate" />
+        <textColor value="$preset_fs25_colorMainLight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+
+    <Profile name="vd_orderTravelText" extends="baseReference" with="anchorTopLeft">
+        <textBold value="false" />
+        <textSize value="15px" />
+        <textAlignment value="left" />
+        <textLayoutMode value="resize" />
+        <textMinSize value="12px" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+
+    <Profile name="vd_orderDaysText" extends="baseReference" with="anchorTopLeft">
+        <textBold value="false" />
+        <textSize value="17px" />
+        <textAlignment value="left" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+
+    <Profile name="vd_orderDetailText" extends="baseReference" with="anchorTopLeft">
+        <textSize value="13px" />
+        <textAlignment value="left" />
+        <textVerticalAlignment value="center" />
+        <textLayoutMode value="resize" />
+        <textMinSize value="11px" />
+        <textColor value="$preset_fs25_colorMainLight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+
+    <Profile name="vd_orderPaymentText" extends="vd_orderDetailText">
+        <textBold value="true" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+    </Profile>
+
+    <Profile name="vd_emptyText" extends="baseReference" with="anchorMiddleCenter">
+        <textBold value="true" />
+        <textSize value="20px" />
+        <textAlignment value="center" />
+        <textColor value="$preset_colorWhite_50" />
+    </Profile>
+
+    <!-- Lieferzeit-Anzeige im Shop-Kaufbildschirm -->
+    <Profile name="vd_shopInfoBox" extends="baseReference" with="anchorTopLeft">
+        <size value="320px 96px" />
+        <position value="670px -210px" />
+        <imageSliceId value="gui.colorPreset" />
+        <imageColor value="$preset_fs25_colorMainDark_90" />
+    </Profile>
+
+    <Profile name="vd_shopInfoLabel" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="200px 22px" />
+        <position value="16px -16px" />
+        <textSize value="16px" />
+        <textBold value="true" />
+        <textUpperCase value="true" />
+        <textColor value="$preset_fs25_colorMainLight" />
+    </Profile>
+
+    <Profile name="vd_shopInfoValue" extends="fs25_textDefault" with="anchorTopRight">
+        <size value="140px 22px" />
+        <position value="-16px -16px" />
+        <textSize value="18px" />
+        <textAlignment value="right" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+    </Profile>
+
+    <Profile name="vd_shopTravelLabel" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="200px 20px" />
+        <position value="16px -54px" />
+        <textSize value="14px" />
+        <textBold value="true" />
+        <textUpperCase value="true" />
+        <textColor value="$preset_fs25_colorMainLight" />
+    </Profile>
+
+    <Profile name="vd_shopTravelValue" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="288px 20px" />
+        <position value="16px -72px" />
+        <textSize value="15px" />
+        <textAlignment value="left" />
+        <textColor value="$preset_fs25_colorMainHighlight" />
+    </Profile>
+</GUIProfiles>

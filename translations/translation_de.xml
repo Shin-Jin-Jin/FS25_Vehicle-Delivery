@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <texts>
+        <text name="vd_modName" text="Fahrzeug-Lieferung"/>
+        <text name="vd_pageTitle" text="Fahrzeug-Lieferung"/>
+        <text name="vd_colBrand" text="Hersteller"/>
+        <text name="vd_colMachine" text="Maschine"/>
+        <text name="vd_notifyCancelled" text="Bestellung storniert: %s"/>
+        <text name="vd_cancelButton" text="Stornieren"/>
+        <text name="vd_cancelFull" text="Bestellung „%s“ stornieren?\n\nDu erhältst den gezahlten Fahrzeugbetrag vollständig zurück: %s"/>
+        <text name="vd_cancelDamage" text="Bestellung „%s“ stornieren?\n\nDas Fahrzeug ist bereits unterwegs.\nDu erhältst %s zurück (Schadenersatz: %s)."/>
+        <text name="vd_cancelPenalty" text="Bestellung „%s“ stornieren?\n\nKurz vor der Lieferung! Der gezahlte Fahrzeugbetrag (%s) verfällt und es wird eine Strafe von %s fällig.\n\nWirklich stornieren?"/>
+        <text name="vd_cancelNoOrder" text="Kein Auftrag ausgewaehlt."/>
+        <text name="vd_colStatus" text="Status"/>
+        <text name="vd_statusPlaced" text="Bestellung aufgegeben"/>
+        <text name="vd_statusProduction" text="In Produktion"/>
+        <text name="vd_statusShipped" text="Unterwegs"/>
+        <text name="vd_statusDelayed" text="Verzögert"/>
+        <text name="vd_notifyDelayed" text="Die Lieferung von %s verzögert sich um %d Tag(e)."/>
+        <text name="vd_delaysLabel" text="Lieferverzögerungen (zufällig)"/>
+        <text name="vd_statusAwaitingPayment" text="Wartet auf Zahlung"/>
+        <text name="vd_notifyAwaitingPayment" text="Lieferung wartet: Zahlung inkl. Zoll für %s nicht gedeckt"/>
+        <text name="vd_statusArriving" text="Kurz vor Lieferung"/>
+        <text name="vd_colTravel" text="Transportweg"/>
+        <text name="vd_colRemaining" text="Verbleibend"/>
+        <text name="vd_emptyList" text="Aktuell sind keine Lieferungen unterwegs."/>
+        <text name="vd_downpaymentLabel" text="Anzahlung (20%, Rest bei Lieferung)"/>
+        <text name="vd_on" text="An"/>
+        <text name="vd_off" text="Aus"/>
+        <text name="vd_regionLabel" text="Deine Hof-Region"/>
+        <text name="vd_daySingular" text="Tag"/>
+        <text name="vd_dayPlural" text="Tage"/>
+        <text name="vd_regionEU" text="Europa"/>
+        <text name="vd_regionNA" text="Nordamerika"/>
+        <text name="vd_regionSA" text="Südamerika"/>
+        <text name="vd_regionAS" text="Asien"/>
+        <text name="vd_regionAF" text="Afrika"/>
+        <text name="vd_regionOC" text="Ozeanien"/>
+        <text name="vd_notifyOrdered" text="%s: Lieferung in %d Tag(en)"/>
+        <text name="vd_travelLabel" text="Transportweg"/>
+        <text name="vd_travelLocal" text="Vor Ort in %s"/>
+        <text name="vd_deliveryTimeLabel" text="Lieferzeit"/>
+        <text name="vd_confirmDownpayment" text="Anzahlung jetzt: %s\nRest bei Lieferung: %s"/>
+        <text name="vd_confirmTravel" text="Transportweg: %s"/>
+        <text name="vd_confirmOrder" text="Dieses Fahrzeug wird in %d Tag(en) geliefert.\n\nBestellung aufgeben?"/>
+        <text name="vd_deliveryImmediate" text="Sofort verfügbar"/>
+        <text name="vd_deliveryDays" text="%d Tag(e)"/>
+        <text name="vd_notifyDelivered" text="%s wurde geliefert"/>
+        <text name="vd_customsLabel" text="Zollgebühren (je Herkunft und Ziel)"/>
+        <text name="vd_confirmDelivery" text="Dieses Fahrzeug wird in %d Tag(en) geliefert."/>
+        <text name="vd_confirmVehiclePrice" text="Fahrzeugpreis: %s"/>
+        <text name="vd_confirmCustoms" text="Zollgebühren (%s%%): %s (bei Lieferung)"/>
+        <text name="vd_confirmCustomsDisabled" text="Zollgebühren: deaktiviert (%s)"/>
+        <text name="vd_confirmTotal" text="Gesamtpreis inkl. Zoll: %s"/>
+        <text name="vd_confirmPayNow" text="Zahlung jetzt: %s"/>
+        <text name="vd_confirmPayOnDelivery" text="Bei Lieferung fällig (inkl. Zoll): %s"/>
+        <text name="vd_confirmPlaceOrder" text="Bestellung aufgeben?"/>
+        <text name="vd_orderCustoms" text="Zoll (%s%%): %s"/>
+        <text name="vd_orderPayOnDelivery" text="Bei Lieferung inkl. Zoll: %s"/>
+        <text name="vd_cancelNoCustoms" text="Bei Stornierung werden keine Zollgebühren berechnet."/>
+        <text name="vd_notifyDeliveryFailed" text="Lieferung von %s fehlgeschlagen. Die Bestellung bleibt erhalten; es wurde keine Zahlung einbehalten."/>
+    </texts>
+</l10n>

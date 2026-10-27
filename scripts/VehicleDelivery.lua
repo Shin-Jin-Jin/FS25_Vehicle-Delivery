@@ -155,15 +155,23 @@ VehicleDelivery.nextOrderId = 1
 
 -- ==================== Zeitskala (Tage pro Monat) ======================
 
----Aktuelle Spieleinstellung "Tage pro Monat" (mindestens 1).
+---Spieleinstellung "Tage pro Monat" (mindestens 1).
+-- Das Spiel fuehrt zwei Werte: plannedDaysPerPeriod ist das, was im
+-- Einstellungsmenue steht; environment.daysPerPeriod ist die Laenge des
+-- laufenden Monats und uebernimmt eine Aenderung erst zum naechsten Monat.
+-- Die Mod rechnet mit dem eingestellten Wert, damit die angezeigte Lieferzeit
+-- zur Einstellung passt und sich beim Monatswechsel nicht verschiebt.
 function VehicleDelivery.getDaysPerMonth()
     local mission = g_currentMission
     local daysPerMonth = nil
-    if mission ~= nil and mission.environment ~= nil then
-        daysPerMonth = mission.environment.daysPerPeriod
-    end
-    if (daysPerMonth == nil or daysPerMonth <= 0) and mission ~= nil and mission.missionInfo ~= nil then
+    if mission ~= nil and mission.missionInfo ~= nil then
         daysPerMonth = mission.missionInfo.plannedDaysPerPeriod
+    end
+    if (daysPerMonth == nil or daysPerMonth <= 0) and mission ~= nil and mission.environment ~= nil then
+        daysPerMonth = mission.environment.plannedDaysPerPeriod
+    end
+    if (daysPerMonth == nil or daysPerMonth <= 0) and mission ~= nil and mission.environment ~= nil then
+        daysPerMonth = mission.environment.daysPerPeriod
     end
     if daysPerMonth == nil or daysPerMonth <= 0 then
         daysPerMonth = 1

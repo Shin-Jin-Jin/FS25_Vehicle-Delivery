@@ -97,7 +97,8 @@ VehicleDelivery.MAP_REGION = {
     MapEU = "EU",  -- Zielonka (Polen/Europa)
     MapAS = "AS",  -- Hutan Pantai (Suedostasien)
     -- DLC (mapId per pdlc_-Prefix, exakt wie im Spiel)
-    ["pdlc_highlandsFishingPack.HighlandsFishingMap"] = "EU",  -- Highlands (Schottland)
+    ["pdlc_highlandsFishingPack.HighlandsFishingMap"] = "EU",  -- Kinlaig (Schottland)
+    ["pdlc_beansAndAlpacasPack.beansAndAlpacasMap"] = "SA",    -- Catuaí (Suedamerika)
 }
 
 -- Regionen-Netz: Kanten mit Gewicht (Sprünge), ungerichtet.

@@ -99,6 +99,9 @@ VehicleDelivery.MAP_REGION = {
     -- DLC (mapId per pdlc_-Prefix, exakt wie im Spiel)
     ["pdlc_highlandsFishingPack.HighlandsFishingMap"] = "EU",  -- Kinlaig (Schottland)
     ["pdlc_beansAndAlpacasPack.beansAndAlpacasMap"] = "SA",    -- Catuaí (Suedamerika)
+    -- Kostenlose GIANTS-Maps vom ModHub (mapId = ZIP-Name . Map-ID)
+    ["FS25_horschAgrovation.HorschAgrovation"] = "EU",         -- HORSCH AgroVation (Knezmost, Tschechien)
+    ["FS25_silverrunForest.MapForest"] = "NA",                 -- Silverrun Forest (Pazifischer Nordwesten)
 }
 
 -- Regionen-Netz: Kanten mit Gewicht (Sprünge), ungerichtet.

@@ -16,7 +16,7 @@
         <text name="vd_statusProduction" text="En production"/>
         <text name="vd_statusShipped" text="En transit"/>
         <text name="vd_statusDelayed" text="Retardé"/>
-        <text name="vd_notifyDelayed" text="La livraison de %s est retardée de %d jour(s)."/>
+        <text name="vd_notifyDelayed" text="La livraison de %s est retardée de %s."/>
         <text name="vd_delaysLabel" text="Retards de livraison (aléatoires)"/>
         <text name="vd_statusAwaitingPayment" text="En attente de paiement"/>
         <text name="vd_notifyAwaitingPayment" text="Livraison en attente : paiement, douane comprise, de %s non couvert"/>
@@ -28,15 +28,13 @@
         <text name="vd_on" text="Activé"/>
         <text name="vd_off" text="Désactivé"/>
         <text name="vd_regionLabel" text="Région de votre ferme"/>
-        <text name="vd_daySingular" text="jour"/>
-        <text name="vd_dayPlural" text="jours"/>
         <text name="vd_regionEU" text="Europe"/>
         <text name="vd_regionNA" text="Amérique du Nord"/>
         <text name="vd_regionSA" text="Amérique du Sud"/>
         <text name="vd_regionAS" text="Asie"/>
         <text name="vd_regionAF" text="Afrique"/>
         <text name="vd_regionOC" text="Océanie"/>
-        <text name="vd_notifyOrdered" text="%s : livraison dans %d jour(s)"/>
+        <text name="vd_notifyOrdered" text="%s : livraison dans %s"/>
         <text name="vd_travelLabel" text="Itinéraire de transport"/>
         <text name="vd_travelLocal" text="Sur place en %s"/>
         <text name="vd_deliveryTimeLabel" text="Délai de livraison"/>
@@ -47,7 +45,7 @@
         <text name="vd_deliveryDays" text="%d jour(s)"/>
         <text name="vd_notifyDelivered" text="%s a été livré"/>
         <text name="vd_customsLabel" text="Droits de douane (selon origine et destination)"/>
-        <text name="vd_confirmDelivery" text="Ce véhicule sera livré dans %d jour(s)."/>
+        <text name="vd_confirmDelivery" text="Ce véhicule sera livré dans %s."/>
         <text name="vd_confirmVehiclePrice" text="Prix du véhicule : %s"/>
         <text name="vd_confirmCustoms" text="Droits de douane (%s%%) : %s (à la livraison)"/>
         <text name="vd_confirmCustomsDisabled" text="Droits de douane : désactivés (%s)"/>
@@ -59,5 +57,10 @@
         <text name="vd_orderPayOnDelivery" text="Dû à la livraison, douane comprise : %s"/>
         <text name="vd_cancelNoCustoms" text="Aucun droit de douane ne sera facturé en cas d’annulation."/>
         <text name="vd_notifyDeliveryFailed" text="La livraison de %s a échoué. La commande est conservée ; aucun paiement n’a été retenu."/>
+        <text name="vd_durationDays" text="%d jour(s)"/>
+        <text name="vd_durationHours" text="%d h"/>
+        <text name="vd_durationDaysHours" text="%d jour(s), %d h"/>
+        <text name="vd_notEnoughMoneyNow" text="Pas assez d’argent. Cette commande nécessite maintenant %s."/>
+        <text name="vd_purchaseOrdered" text="Votre commande a été passée et est en route."/>
     </texts>
 </l10n>

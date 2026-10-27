@@ -42,29 +42,60 @@ function VehicleDeliveryShopInfo.onUpdateButtons(screen)
 end
 
 
+-- Cache: kauft dieses Store-Item mehrere Objekte auf einmal (Mengenauswahl)?
+VehicleDeliveryShopInfo.multiPurchaseCache = {}
+
+
+---True, wenn das Store-Item ueber die Mengenauswahl gekauft wird
+-- (vehicle.multipleItemPurchase). Dann bleibt der Vanilla-Kaufablauf zustaendig.
+function VehicleDeliveryShopInfo.getIsMultipleItemPurchase(storeItem)
+    local filename = storeItem ~= nil and storeItem.xmlFilename or nil
+    if filename == nil or XMLFile == nil then
+        return false
+    end
+    local cached = VehicleDeliveryShopInfo.multiPurchaseCache[filename]
+    if cached ~= nil then
+        return cached
+    end
+    local result = false
+    local xmlFile = XMLFile.load("vdMultiPurchaseCheck", filename, nil)
+    if xmlFile ~= nil then
+        result = xmlFile:hasProperty("vehicle.multipleItemPurchase")
+        xmlFile:delete()
+    end
+    VehicleDeliveryShopInfo.multiPurchaseCache[filename] = result
+    return result
+end
+
+
+---Geld des eigenen Hofs (Client-Sicht), nil wenn nicht ermittelbar.
+function VehicleDeliveryShopInfo.getOwnFarmMoney()
+    local mission = g_currentMission
+    if mission == nil or mission.getMoney == nil then
+        return nil
+    end
+    local farmId = mission.getFarmId ~= nil and mission:getFarmId() or nil
+    return mission:getMoney(farmId)
+end
+
+
 ---Ueberschreibt den Kauf-Button. Zeigt bei verzoegerten Fahrzeugen einen
--- Bestaetigungsdialog mit Lieferzeit; bei Ja laeuft der Originalkauf (superFunc),
--- den unsere Mod ohnehin abfaengt und verzoegert.
+-- Bestaetigungsdialog mit Lieferzeit und Zahlungsaufteilung. Er ersetzt die
+-- Vanilla-Kaufbestaetigung: Die Vanilla-Pruefung verlangt den GESAMTpreis auf
+-- dem Konto, faellig ist bei einer Bestellung aber nur "Zahlung jetzt". Deshalb
+-- pruefen wir die Deckung selbst und starten den Kauf direkt (onYesNoBuy).
+-- Den Kauf faengt unsere Mod serverseitig ab und verzoegert ihn.
 function VehicleDeliveryShopInfo.onClickBuy(screen, superFunc)
     local storeItem = screen.storeItem
 
     -- Sofort-Faelle: kein Dialog, direkt Originalkauf (gebraucht/Konfiguration
-    -- eines vorhandenen Fahrzeugs/In-App).
+    -- eines vorhandenen Fahrzeugs/In-App/Miete/Palette ...).
     if storeItem == nil
         or storeItem.xmlFilename == nil
         or screen.vehicle ~= nil
-        or screen.saleItem ~= nil
-        or screen.isFreeOfCharge == true
-        or screen.leaseVehicle == true
-        or storeItem.isInAppPurchase then
+        or not VehicleDelivery.getIsDelayedPurchase(storeItem, screen.saleItem,
+            screen.leaseVehicle, screen.isFreeOfCharge) then
         return superFunc(screen)
-    end
-
-    -- Palette etc. (Sofort-Kategorie) -> kein Dialog.
-    if storeItem.categoryName ~= nil and VehicleDelivery.INSTANT_CATEGORIES ~= nil then
-        if VehicleDelivery.INSTANT_CATEGORIES[string.upper(storeItem.categoryName)] == true then
-            return superFunc(screen)
-        end
     end
 
     -- Lieferzeit ueber den Aufpreis bestimmen (Sonderausstattung = Aufpreis > 0).
@@ -91,8 +122,17 @@ function VehicleDeliveryShopInfo.onClickBuy(screen, superFunc)
     end
     local route = VehicleDelivery.getRegionName(quote.originRegion)
         .. " -> " .. VehicleDelivery.getRegionName(quote.destinationRegion)
+
+    -- Deckung pruefen: faellig ist jetzt nur "Zahlung jetzt" (Anzahlung bzw.
+    -- ohne Anzahlung der Fahrzeugpreis). Der Server prueft dasselbe noch einmal.
+    local balance = VehicleDeliveryShopInfo.getOwnFarmMoney()
+    if balance ~= nil and quote.upfrontPayment > 0 and balance < quote.upfrontPayment then
+        InfoDialog.show(string.format(g_i18n:getText("vd_notEnoughMoneyNow"), money(quote.upfrontPayment)))
+        return
+    end
+
     local lines = {
-        string.format(g_i18n:getText("vd_confirmDelivery"), days),
+        string.format(g_i18n:getText("vd_confirmDelivery"), VehicleDelivery.formatDuration(days)),
         string.format(g_i18n:getText("vd_confirmTravel"), route),
         string.format(g_i18n:getText("vd_confirmVehiclePrice"), money(quote.vehiclePrice))
     }
@@ -110,10 +150,21 @@ function VehicleDeliveryShopInfo.onClickBuy(screen, superFunc)
     lines[#lines + 1] = g_i18n:getText("vd_confirmPlaceOrder")
     local text = table.concat(lines, "\n"):gsub("\\n", "\n")
 
+    -- Mengenauswahl-Artikel bleiben beim Vanilla-Ablauf (er fragt die Menge ab).
+    local useVanillaFlow = screen.onYesNoBuy == nil
+        or VehicleDeliveryShopInfo.getIsMultipleItemPurchase(storeItem)
+
     YesNoDialog.show(
         function(yes)
-            if yes then
+            if not yes then
+                return
+            end
+            if useVanillaFlow then
                 superFunc(screen)
+            else
+                -- Unser Dialog ist die Kaufbestaetigung: direkt kaufen, ohne die
+                -- Vanilla-Pruefung gegen den Gesamtpreis.
+                screen:onYesNoBuy(true)
             end
         end,
         nil,

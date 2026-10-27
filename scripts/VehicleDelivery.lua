@@ -136,9 +136,113 @@ VehicleDelivery.DELAY_MIN = 1
 VehicleDelivery.DELAY_MAX = 2
 VehicleDelivery.delaysEnabled = true
 
+-- Zeitskala: Alle Lieferzeiten (BASE_DAYS, CONFIG_DAYS, DAYS_PER_HOP, Verzoegerungen)
+-- sind Kalendertage bezogen auf einen Monat mit 30 Tagen. Sie werden auf die
+-- Spieleinstellung "Tage pro Monat" umgerechnet und stuendlich heruntergezaehlt.
+-- Beispiel: 12 Tage bei 1 Tag/Monat = 12/30 Monat = 9,6 Spielstunden.
+VehicleDelivery.DAYS_PER_MONTH_REFERENCE = 30
+-- Toleranz fuer Rundungsreste beim Herunterzaehlen (Kalendertage).
+VehicleDelivery.TIME_EPSILON = 0.0001
+
 -- Offene Lieferauftraege. Eintrag (Baustein 1): { itemName=string, daysLeft=int }
 VehicleDelivery.pendingDeliveries = {}
 VehicleDelivery.nextOrderId = 1
+
+
+-- ==================== Zeitskala (Tage pro Monat) ======================
+
+---Aktuelle Spieleinstellung "Tage pro Monat" (mindestens 1).
+function VehicleDelivery.getDaysPerMonth()
+    local mission = g_currentMission
+    local daysPerMonth = nil
+    if mission ~= nil and mission.environment ~= nil then
+        daysPerMonth = mission.environment.daysPerPeriod
+    end
+    if (daysPerMonth == nil or daysPerMonth <= 0) and mission ~= nil and mission.missionInfo ~= nil then
+        daysPerMonth = mission.missionInfo.plannedDaysPerPeriod
+    end
+    if daysPerMonth == nil or daysPerMonth <= 0 then
+        daysPerMonth = 1
+    end
+    return daysPerMonth
+end
+
+
+---Rechnet Kalendertage (Lieferzeit-Einheit der Mod) in Spielstunden um.
+function VehicleDelivery.getGameHoursForDays(days)
+    return (days or 0) * 24 * VehicleDelivery.getDaysPerMonth() / VehicleDelivery.DAYS_PER_MONTH_REFERENCE
+end
+
+
+---Rechnet Spielstunden in Kalendertage um (Gegenstueck zu getGameHoursForDays).
+function VehicleDelivery.getDaysForGameHours(gameHours)
+    return (gameHours or 0) * VehicleDelivery.DAYS_PER_MONTH_REFERENCE / (24 * VehicleDelivery.getDaysPerMonth())
+end
+
+
+---Lesbare Dauer in Spielzeit, z.B. "3 Tage", "9 Std." oder "1 Tag, 5 Std.".
+function VehicleDelivery.formatDuration(days)
+    local hours = math.ceil(VehicleDelivery.getGameHoursForDays(math.max(0, days or 0)) - 0.001)
+    hours = math.max(0, hours)
+    local fullDays = math.floor(hours / 24)
+    local restHours = hours - fullDays * 24
+    if fullDays == 0 then
+        return string.format(g_i18n:getText("vd_durationHours"), restHours)
+    elseif restHours == 0 then
+        return string.format(g_i18n:getText("vd_durationDays"), fullDays)
+    end
+    return string.format(g_i18n:getText("vd_durationDaysHours"), fullDays, restHours)
+end
+
+
+-- ==================== Kauf-Einordnung =================================
+
+---Sofort-Kategorie (Paletten, BigBags ...)? Diese Artikel haben keine Lieferzeit.
+function VehicleDelivery.getIsInstantStoreItem(storeItem)
+    if storeItem == nil or storeItem.categoryName == nil then
+        return false
+    end
+    return VehicleDelivery.INSTANT_CATEGORIES[string.upper(storeItem.categoryName)] == true
+end
+
+
+---Wird dieser Kauf als Bestellung mit Lieferzeit abgewickelt?
+-- Gebraucht, Miete, kostenlos, In-App und Sofort-Kategorien: nein.
+function VehicleDelivery.getIsDelayedPurchase(storeItem, saleItem, leaseVehicle, isFreeOfCharge)
+    if storeItem == nil or storeItem.isInAppPurchase then
+        return false
+    end
+    if isFreeOfCharge == true or saleItem ~= nil or leaseVehicle == true then
+        return false
+    end
+    return not VehicleDelivery.getIsInstantStoreItem(storeItem)
+end
+
+
+---Angehaengt an BuyVehicleData.updatePrice: Bei einer Bestellung mit Anzahlung
+-- verlangt das Spiel beim Kauf nur die Anzahlung. Damit prueft der Server die
+-- Deckung gegen "Zahlung jetzt" statt gegen den Gesamtpreis und bucht auch nur
+-- diesen Betrag ab. Der volle Preis bleibt in vdFullPrice erhalten.
+function VehicleDelivery.onUpdateBuyPrice(buyData)
+    if buyData == nil then
+        return
+    end
+    buyData.vdFullPrice = nil
+    if not VehicleDelivery.downpaymentEnabled then
+        return
+    end
+    if not VehicleDelivery.getIsDelayedPurchase(buyData.storeItem, buyData.saleItem,
+        buyData.leaseVehicle, buyData.isFreeOfCharge) then
+        return
+    end
+    local fullPrice = buyData.price or 0
+    if fullPrice <= 0 then
+        return
+    end
+    local quote = VehicleDelivery.getCustomsQuote(buyData.storeItem, fullPrice)
+    buyData.vdFullPrice = fullPrice
+    buyData.price = quote.upfrontPayment
+end
 
 
 -- ============================ Init ====================================
@@ -150,14 +254,19 @@ function VehicleDelivery.init()
 
     if BuyVehicleData ~= nil then
         BuyVehicleData.buy = Utils.overwrittenFunction(BuyVehicleData.buy, VehicleDelivery.onBuy)
+        if BuyVehicleData.updatePrice ~= nil then
+            BuyVehicleData.updatePrice = Utils.appendedFunction(BuyVehicleData.updatePrice, VehicleDelivery.onUpdateBuyPrice)
+        end
     else
         Logging.warning("VehicleDelivery: BuyVehicleData nicht verfuegbar -- Hook nicht installiert.")
     end
 
-    if g_messageCenter ~= nil and MessageType ~= nil and MessageType.DAY_CHANGED ~= nil then
-        g_messageCenter:subscribe(MessageType.DAY_CHANGED, VehicleDelivery.onDayChanged, VehicleDelivery)
+    -- Lieferzeiten laufen stuendlich ab, damit sie der Einstellung "Tage pro
+    -- Monat" folgen (bei 1 Tag/Monat ist ein Spieltag ein ganzer Monat).
+    if g_messageCenter ~= nil and MessageType ~= nil and MessageType.HOUR_CHANGED ~= nil then
+        g_messageCenter:subscribe(MessageType.HOUR_CHANGED, VehicleDelivery.onHourChanged, VehicleDelivery)
     else
-        Logging.warning("VehicleDelivery: MessageCenter/DAY_CHANGED nicht verfuegbar.")
+        Logging.warning("VehicleDelivery: MessageCenter/HOUR_CHANGED nicht verfuegbar.")
     end
 
     -- Konsolenbefehle nur im Debug-Modus (Entwicklung).
@@ -165,7 +274,7 @@ function VehicleDelivery.init()
         addConsoleCommand("vdTestOrder", "Test-Lieferauftrag: vdTestOrder <tage> [name]", "consoleAddTestOrder", VehicleDelivery)
         addConsoleCommand("vdList", "Offene Lieferauftraege anzeigen", "consoleListOrders", VehicleDelivery)
         addConsoleCommand("vdSetRegion", "Spieler-Region setzen: vdSetRegion <EU/NA/SA/AS/AF/OC>", "consoleSetRegion", VehicleDelivery)
-        addConsoleCommand("vdSkipDay", "Tageswechsel erzwingen (Lieferungen einen Tag naeher)", "consoleSkipDay", VehicleDelivery)
+        addConsoleCommand("vdSkipDay", "24 Spielstunden vorspulen (nur Lieferungen)", "consoleSkipDay", VehicleDelivery)
         addConsoleCommand("vdDump", "Struktur einer globalen Klasse ins Log: vdDump <name> [tiefe]", "consoleDump", VehicleDelivery)
         addConsoleCommand("vdDumpVehicle", "Struktur des ersten Fahrzeugs ins Log: vdDumpVehicle [tiefe]", "consoleDumpVehicle", VehicleDelivery)
         addConsoleCommand("vdFind", "Globale Namen mit Muster finden: vdFind <muster>", "consoleFind", VehicleDelivery)
@@ -1229,17 +1338,25 @@ function VehicleDelivery.consoleSetRegion(_, region)
 end
 
 
----vdSkipDay: loest einen Tageswechsel von Hand aus (zum Testen).
+---vdSkipDay: spult die Lieferungen um 24 Spielstunden vor (zum Testen).
 function VehicleDelivery.consoleSkipDay()
-    VehicleDelivery.onDayChanged()
-    return string.format("Tageswechsel erzwungen. Offene Lieferauftraege: %d", #VehicleDelivery.pendingDeliveries)
+    VehicleDelivery.advanceDeliveries(24)
+    return string.format("24 Spielstunden vorgespult. Offene Lieferauftraege: %d", #VehicleDelivery.pendingDeliveries)
 end
 
 
 -- ==================== Lieferauftraege: Zaehlwerk ======================
 
----Tageswechsel: alle Auftraege runterzaehlen, faellige ausliefern.
-function VehicleDelivery.onDayChanged()
+---Stundenwechsel im Spiel: Lieferungen um eine Spielstunde voranbringen.
+function VehicleDelivery.onHourChanged()
+    VehicleDelivery.advanceDeliveries(1)
+end
+
+
+---Bringt alle Auftraege um gameHours Spielstunden voran und liefert faellige aus.
+-- Die Auftraege zaehlen in Kalendertagen; wie viele davon eine Spielstunde
+-- ausmacht, haengt von der Einstellung "Tage pro Monat" ab.
+function VehicleDelivery.advanceDeliveries(gameHours)
     -- Auslieferung ist Server-Aufgabe. Ein reiner Client hat nur die abgespeckte
     -- Sync-Liste (ohne storeItem/Spawn-Daten) und darf NICHT ausliefern -- sonst
     -- "deliverOrder ohne gueltige Auftragsdaten". Der Server sendet danach die
@@ -1253,7 +1370,14 @@ function VehicleDelivery.onDayChanged()
         return
     end
 
-    if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: Tageswechsel -- %d offene Lieferung(en).", #list) end
+    -- Vergangene Zeit in Kalendertagen (Lieferzeit-Einheit der Mod).
+    local step = VehicleDelivery.getDaysForGameHours(gameHours or 1)
+    if step <= 0 then
+        return
+    end
+
+    if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: +%d Spielstunde(n) = %.3f Tag(e) -- %d offene Lieferung(en).",
+        gameHours or 1, step, #list) end
 
     -- Erst runterzaehlen und faellige Auftraege sammeln (noch nicht ausliefern).
     -- Faellige, bei denen die Restzahlung nicht gedeckt ist, werden NICHT
@@ -1263,29 +1387,31 @@ function VehicleDelivery.onDayChanged()
     for i = #list, 1, -1 do
         local order = list[i]
 
-        -- Lieferverzoegerung: kleine, einmalige Chance auf +1-2 Tage. Nur bei noch
-        -- laufenden Auftraegen (daysLeft > 1, damit nicht am Liefertag selbst) und
-        -- hoechstens einmal pro Auftrag (wasDelayed).
+        -- Lieferverzoegerung: einmalige Chance auf +1-2 Tage, DELAY_CHANCE je
+        -- Kalendertag (auf den Zeitschritt umgerechnet). Nur bei noch laufenden
+        -- Auftraegen (daysLeft > 1, nicht kurz vor Lieferung) und hoechstens
+        -- einmal pro Auftrag (wasDelayed).
         if VehicleDelivery.delaysEnabled and not order.wasDelayed and order.daysLeft > 1 then
-            if math.random() < VehicleDelivery.DELAY_CHANCE then
+            local chance = 1 - (1 - VehicleDelivery.DELAY_CHANCE) ^ step
+            if math.random() < chance then
                 local extra = math.random(VehicleDelivery.DELAY_MIN, VehicleDelivery.DELAY_MAX)
                 order.daysLeft = order.daysLeft + extra
                 if order.totalDays ~= nil then
                     order.totalDays = order.totalDays + extra
                 end
                 order.wasDelayed = true
-                VehicleDelivery.notify(string.format(
-                    g_i18n:getText("vd_notifyDelayed"), tostring(order.itemName), extra))
+                VehicleDelivery.notify(string.format(g_i18n:getText("vd_notifyDelayed"),
+                    tostring(order.itemName), VehicleDelivery.formatDuration(extra)))
                 if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: '%s' verzoegert sich um %d Tag(e).",
                     tostring(order.itemName), extra) end
             end
         end
 
         if order.daysLeft > 0 then
-            order.daysLeft = order.daysLeft - 1
+            order.daysLeft = math.max(0, order.daysLeft - step)
         end
 
-        if order.daysLeft <= 0 then
+        if order.daysLeft <= VehicleDelivery.TIME_EPSILON then
             -- Kann die Restzahlung gedeckt werden?
             local canPay = true
             local rest = order.remainingPayment or 0
@@ -1321,7 +1447,8 @@ function VehicleDelivery.onDayChanged()
                 end
             end
         else
-            if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: '%s' noch %d Tag(e).", tostring(order.itemName), order.daysLeft) end
+            if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: '%s' noch %.2f Tag(e) = %s.", tostring(order.itemName),
+                order.daysLeft, VehicleDelivery.formatDuration(order.daysLeft)) end
         end
     end
 
@@ -1383,7 +1510,8 @@ function VehicleDelivery.consoleListOrders()
     end
     local lines = { string.format("%d offene Lieferauftraege:", #list) }
     for i, order in ipairs(list) do
-        table.insert(lines, string.format("  %d) '%s' -- noch %d Tag(e)", i, tostring(order.itemName), order.daysLeft))
+        table.insert(lines, string.format("  %d) '%s' -- noch %.2f Tag(e) = %s", i, tostring(order.itemName),
+            order.daysLeft or 0, VehicleDelivery.formatDuration(order.daysLeft)))
     end
     return table.concat(lines, "\n")
 end
@@ -1441,7 +1569,7 @@ function VehicleDelivery.deliverOrder(order, sideOffset)
     sideOffset = sideOffset or 0
 
     -- Anzahlungsmodell: Restbetrag (80%) bei Lieferung abbuchen. Die Deckung
-    -- wurde bereits in onDayChanged geprueft (sonst wartet die Lieferung).
+    -- wurde bereits in advanceDeliveries geprueft (sonst wartet die Lieferung).
     local chargedPayment = order.remainingPayment or 0
     if chargedPayment > 0 and g_currentMission ~= nil and g_currentMission.addMoney ~= nil then
         local farmId = order.ownerFarmId or g_currentMission:getFarmId()
@@ -1497,7 +1625,7 @@ function VehicleDelivery.onDelivered(_, loadedVehicles, loadingState, args)
             end
         end
         -- Fehlgeschlagener Spawn: Zahlung zurueckgeben und denselben Auftrag
-        -- mit unveraenderten Zollwerten fuer den naechsten Tag wiederherstellen.
+        -- mit unveraenderten Zollwerten fuer die naechste Spielstunde wiederherstellen.
         if order ~= nil then
             if (args.chargedPayment or 0) > 0 then
                 local farmId = order.ownerFarmId or g_currentMission:getFarmId()
@@ -1547,36 +1675,25 @@ end
 -- ==================== Abgefangener Kauf ===============================
 
 function VehicleDelivery.onBuy(self, superFunc, storePlaces, usedStorePlaces, callback, callbackTarget, callbackArguments)
-    if g_server == nil or self.isFreeOfCharge == true or self.storeItem == nil
-        or self.storeItem.isInAppPurchase then
-        return superFunc(self, storePlaces, usedStorePlaces, callback, callbackTarget, callbackArguments)
-    end
-    -- Nicht-Fahrzeug-Kaufobjekte sofort verfuegbar -- keine Lieferzeit.
-    -- (Paletten, BigBags, Container, Ballen, IBC ...). Erkennung ueber categoryName.
-    if self.storeItem ~= nil and self.storeItem.categoryName ~= nil then
-        local cat = string.upper(self.storeItem.categoryName)
-        if VehicleDelivery.INSTANT_CATEGORIES[cat] == true then
-            if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: Kategorie '%s' -> sofort verfuegbar (keine Lieferzeit).", cat) end
-            return superFunc(self, storePlaces, usedStorePlaces, callback, callbackTarget, callbackArguments)
-        end
-    end
-
-    if self.saleItem ~= nil then
-        if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: gebrauchtes Fahrzeug -> sofort verfuegbar.") end
-        return superFunc(self, storePlaces, usedStorePlaces, callback, callbackTarget, callbackArguments)
-    end
-
-    -- Mietfahrzeuge: sofort verfuegbar, keine Lieferzeit (man mietet, um jetzt zu nutzen).
-    if self.leaseVehicle == true then
-        if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: Mietfahrzeug -> sofort verfuegbar.") end
+    -- Gebraucht, Miete, kostenlos, In-App und Sofort-Kategorien (Paletten,
+    -- BigBags, Container, Ballen, IBC ...) sind sofort verfuegbar.
+    if g_server == nil or not VehicleDelivery.getIsDelayedPurchase(self.storeItem, self.saleItem,
+        self.leaseVehicle, self.isFreeOfCharge) then
         return superFunc(self, storePlaces, usedStorePlaces, callback, callbackTarget, callbackArguments)
     end
 
     -- "Sonderkonfig" am Aufpreis erkennen (konsistent mit der Shop-Anzeige):
-    -- self.price ist der volle Preis inkl. Konfig, storeItem.price der Basispreis.
+    -- der volle Preis inkl. Konfig (bei Anzahlung in vdFullPrice, weil price dann
+    -- schon die Anzahlung ist), storeItem.price ist der Basispreis.
     local basePrice = (self.storeItem ~= nil and self.storeItem.price) or 0
-    local fullPrice = self.price or basePrice
+    local fullPrice = self.vdFullPrice or self.price or basePrice
     local quote = VehicleDelivery.getCustomsQuote(self.storeItem, fullPrice)
+
+    -- Das Spiel bucht beim Kauf self.price ab: nur "Zahlung jetzt" (Anzahlung
+    -- bzw. ohne Anzahlung den vollen Fahrzeugpreis). Der Rest inkl. Zoll wird
+    -- bei der Lieferung faellig.
+    self.vdFullPrice = fullPrice
+    self.price = quote.upfrontPayment
     local isBaseConfig = (fullPrice <= basePrice)
     local days = VehicleDelivery.calculateDeliveryDaysWithBase(self.storeItem, isBaseConfig)
     -- info nur fuer die Log-Ausgabe (Regionen/Sprünge) weiterhin ermitteln.
@@ -1665,24 +1782,14 @@ function VehicleDelivery.onVehicleBought(_, loadedVehicles, loadingState, args)
     local orderData = args ~= nil and args.orderData or nil
     local name = orderData ~= nil and orderData.itemName or "?"
 
-    -- Anzahlungsmodell: Der Originalkauf hat den VOLLEN Preis abgezogen. Jetzt
-    -- den Restbetrag (80%) zurueckbuchen -- netto bleibt nur die Anzahlung (20%).
-    -- Der Rest wird bei Lieferung faellig.
-    local vehicleRest = orderData ~= nil and math.max(0,
-        (orderData.remainingPayment or 0) - (orderData.customsFee or 0)) or 0
-    if orderData ~= nil and vehicleRest > 0
-        and g_currentMission ~= nil and g_currentMission.addMoney ~= nil then
-        local farmId = orderData.ownerFarmId or g_currentMission:getFarmId()
-        g_currentMission:addMoney(vehicleRest, farmId, MoneyType.SHOP_VEHICLE_BUY, true, true)
-        if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: Anzahlung aktiv -- %d zurueckgebucht (Rest bei Lieferung).",
-            vehicleRest) end
-    end
+    -- Anzahlungsmodell: Das Spiel hat beim Kauf nur "Zahlung jetzt" abgebucht
+    -- (siehe onUpdateBuyPrice/onBuy). Der Rest wird bei Lieferung faellig.
 
     if orderData ~= nil then
         VehicleDelivery.assignOrderId(orderData)
         table.insert(VehicleDelivery.pendingDeliveries, orderData)
-        if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: [Stufe2] Lieferauftrag angelegt: '%s' in %d Tag(en). Offen: %d",
-            name, orderData.daysLeft, #VehicleDelivery.pendingDeliveries) end
+        if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: [Stufe2] Lieferauftrag angelegt: '%s' in %s. Offen: %d",
+            name, VehicleDelivery.formatDuration(orderData.daysLeft), #VehicleDelivery.pendingDeliveries) end
 
         -- MP: Server schickt die aktualisierte Liste an alle Clients.
         if VehicleDeliverySyncEvent ~= nil then
@@ -1693,7 +1800,8 @@ function VehicleDelivery.onVehicleBought(_, loadedVehicles, loadingState, args)
         if VehicleDeliveryNotifyEvent ~= nil then
             VehicleDeliveryNotifyEvent.broadcast("ordered", name, orderData.daysLeft)
         else
-            VehicleDelivery.notify(string.format(g_i18n:getText("vd_notifyOrdered"), name, orderData.daysLeft))
+            VehicleDelivery.notify(string.format(g_i18n:getText("vd_notifyOrdered"), name,
+                VehicleDelivery.formatDuration(orderData.daysLeft)))
         end
 
     else
@@ -1782,8 +1890,9 @@ function VehicleDelivery.onSaveGame(missionInfo)
             VehicleDelivery.assignOrderId(order)
             xmlFile:setInt(key .. "#orderId", order.orderId)
             xmlFile:setString(key .. "#xmlFilename", order.xmlFilename)
-            xmlFile:setInt(key .. "#daysLeft", order.daysLeft)
-            xmlFile:setInt(key .. "#totalDays", order.totalDays or order.daysLeft)
+            -- Kalendertage als Kommazahl (laufen stuendlich ab).
+            xmlFile:setFloat(key .. "#daysLeft", order.daysLeft)
+            xmlFile:setFloat(key .. "#totalDays", order.totalDays or order.daysLeft)
             xmlFile:setInt(key .. "#remainingPayment", order.remainingPayment or 0)
             xmlFile:setInt(key .. "#price", order.price or 0)
             xmlFile:setFloat(key .. "#customsRate", order.customsRate or 0)
@@ -1896,8 +2005,8 @@ function VehicleDelivery.loadFromSavegame()
     local count = 0
     xmlFile:iterate("vehicleDelivery.order", function(_, key)
         local xmlFilename = xmlFile:getString(key .. "#xmlFilename")
-        local daysLeft = xmlFile:getInt(key .. "#daysLeft")
-        local totalDays = xmlFile:getInt(key .. "#totalDays") or daysLeft
+        local daysLeft = xmlFile:getFloat(key .. "#daysLeft")
+        local totalDays = xmlFile:getFloat(key .. "#totalDays") or daysLeft
         local remainingPayment = xmlFile:getInt(key .. "#remainingPayment") or 0
         local price = xmlFile:getInt(key .. "#price") or 0
         local awaitingPayment = xmlFile:getBool(key .. "#awaitingPayment") == true
@@ -2009,8 +2118,10 @@ function VehicleDelivery:loadMap(filename)
         -- Kaufbestaetigungs-Text ueberschreiben -- HIER (nicht in init), weil g_i18n
         -- beim frühen init() noch nicht bereit ist. FS-Standard "Dein Kauf ist beim
         -- Haendler abholbereit" ist falsch -- die Maschine ist unterwegs.
-        local newText = "Deine Bestellung wurde aufgegeben und ist auf dem Weg."
-        if g_i18n ~= nil and g_i18n.setGlobalText ~= nil then
+        local newText = g_i18n ~= nil and g_i18n:getText("vd_purchaseOrdered") or nil
+        if newText == nil then
+            -- ohne Text nichts ueberschreiben
+        elseif g_i18n.setGlobalText ~= nil then
             g_i18n:setGlobalText("shop_messagePurchaseReady", newText)
             if VehicleDelivery.DEBUG then Logging.info("VehicleDelivery: Kaufbestaetigungs-Text ueberschrieben (setGlobalText).") end
         elseif g_i18n ~= nil and g_i18n.setText ~= nil then

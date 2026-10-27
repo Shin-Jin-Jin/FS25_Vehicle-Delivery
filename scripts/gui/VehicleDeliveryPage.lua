@@ -194,9 +194,8 @@ function VehicleDeliveryPage:populateCellForItemInSection(list, sectionIndex, in
         travelText:setText(VehicleDelivery.getOrderStatus(order.daysLeft, order.totalDays, order.awaitingPayment, order.wasDelayed))
     end
     if daysText ~= nil then
-        local d = order.daysLeft or 0
-        local suffix = (d == 1) and g_i18n:getText("vd_daySingular") or g_i18n:getText("vd_dayPlural")
-        daysText:setText(string.format("%d %s", d, suffix))
+        -- Restzeit in Spielzeit (abhaengig von "Tage pro Monat").
+        daysText:setText(VehicleDelivery.formatDuration(order.daysLeft))
     end
     if routeText ~= nil then
         if order.originRegion ~= nil and order.destinationRegion ~= nil then

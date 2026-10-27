@@ -16,7 +16,7 @@
         <text name="vd_statusProduction" text="In production"/>
         <text name="vd_statusShipped" text="In transit"/>
         <text name="vd_statusDelayed" text="Delayed"/>
-        <text name="vd_notifyDelayed" text="The delivery of %s is delayed by %d day(s)."/>
+        <text name="vd_notifyDelayed" text="The delivery of %s is delayed by %s."/>
         <text name="vd_delaysLabel" text="Delivery delays (random)"/>
         <text name="vd_statusAwaitingPayment" text="Awaiting payment"/>
         <text name="vd_notifyAwaitingPayment" text="Delivery on hold: payment including customs for %s not covered"/>
@@ -28,15 +28,13 @@
         <text name="vd_on" text="On"/>
         <text name="vd_off" text="Off"/>
         <text name="vd_regionLabel" text="Your farm's region"/>
-        <text name="vd_daySingular" text="day"/>
-        <text name="vd_dayPlural" text="days"/>
         <text name="vd_regionEU" text="Europe"/>
         <text name="vd_regionNA" text="North America"/>
         <text name="vd_regionSA" text="South America"/>
         <text name="vd_regionAS" text="Asia"/>
         <text name="vd_regionAF" text="Africa"/>
         <text name="vd_regionOC" text="Oceania"/>
-        <text name="vd_notifyOrdered" text="%s: delivery in %d day(s)"/>
+        <text name="vd_notifyOrdered" text="%s: delivery in %s"/>
         <text name="vd_travelLabel" text="Transport route"/>
         <text name="vd_travelLocal" text="Locally in %s"/>
         <text name="vd_deliveryTimeLabel" text="Delivery time"/>
@@ -47,7 +45,7 @@
         <text name="vd_deliveryDays" text="%d day(s)"/>
         <text name="vd_notifyDelivered" text="%s has been delivered"/>
         <text name="vd_customsLabel" text="Customs duties (by origin and destination)"/>
-        <text name="vd_confirmDelivery" text="This vehicle will be delivered in %d day(s)."/>
+        <text name="vd_confirmDelivery" text="This vehicle will be delivered in %s."/>
         <text name="vd_confirmVehiclePrice" text="Vehicle price: %s"/>
         <text name="vd_confirmCustoms" text="Customs duties (%s%%): %s (on delivery)"/>
         <text name="vd_confirmCustomsDisabled" text="Customs duties: disabled (%s)"/>
@@ -59,5 +57,10 @@
         <text name="vd_orderPayOnDelivery" text="Due on delivery incl. customs: %s"/>
         <text name="vd_cancelNoCustoms" text="No customs duties are charged for cancelled orders."/>
         <text name="vd_notifyDeliveryFailed" text="Delivery of %s failed. The order is preserved; no payment was retained."/>
+        <text name="vd_durationDays" text="%d day(s)"/>
+        <text name="vd_durationHours" text="%d h"/>
+        <text name="vd_durationDaysHours" text="%d day(s), %d h"/>
+        <text name="vd_notEnoughMoneyNow" text="Not enough money. Placing this order requires %s now."/>
+        <text name="vd_purchaseOrdered" text="Your order has been placed and is on its way."/>
     </texts>
 </l10n>

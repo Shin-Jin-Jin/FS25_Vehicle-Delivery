@@ -12,9 +12,10 @@ Ausstattung und Entfernung zum Hof.
   (EU, NA, SA, AS, AF, OC) zugeordnet; die Lieferzeit ergibt sich aus der Route
   zwischen Herstellerregion und Hofregion
 - **Konfigurationsabhängig**: Sonderausstattung verlängert die Lieferzeit
-- **Spielkalender-gerecht**: Lieferzeiten sind auf einen Monat mit 30 Tagen
+- **Spielkalender-gerecht**: Lieferzeiten sind auf einen Monat mit 28 Tagen
   bezogen und werden auf die Einstellung „Tage pro Monat" umgerechnet
-  (bei 1 Tag/Monat dauern 12 Tage Lieferzeit rund 10 Spielstunden)
+  (bei 28 Tagen/Monat ist 1 Liefertag = 1 Spieltag, bei 1 Tag/Monat dauern
+  12 Tage Lieferzeit rund 10 Spielstunden)
 - **Anzahlungssystem** (optional): 20 % bei der Bestellung, Rest bei Lieferung –
   zum Bestellen muss nur die Anzahlung auf dem Konto sein
 - **Zollgebühren** (optional): richtungsabhängig je nach Herkunft und Ziel

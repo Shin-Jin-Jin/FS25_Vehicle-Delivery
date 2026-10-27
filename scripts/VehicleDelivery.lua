@@ -141,10 +141,11 @@ VehicleDelivery.DELAY_MAX = 2
 VehicleDelivery.delaysEnabled = true
 
 -- Zeitskala: Alle Lieferzeiten (BASE_DAYS, CONFIG_DAYS, DAYS_PER_HOP, Verzoegerungen)
--- sind Kalendertage bezogen auf einen Monat mit 30 Tagen. Sie werden auf die
+-- sind Kalendertage bezogen auf einen Monat mit 28 Tagen (Hoechstwert der
+-- Einstellung, dort gilt 1 Liefertag = 1 Spieltag). Sie werden auf die
 -- Spieleinstellung "Tage pro Monat" umgerechnet und stuendlich heruntergezaehlt.
--- Beispiel: 12 Tage bei 1 Tag/Monat = 12/30 Monat = 9,6 Spielstunden.
-VehicleDelivery.DAYS_PER_MONTH_REFERENCE = 30
+-- Beispiel: 12 Tage bei 1 Tag/Monat = 12/28 Monat = ca. 10,3 Spielstunden.
+VehicleDelivery.DAYS_PER_MONTH_REFERENCE = 28
 -- Toleranz fuer Rundungsreste beim Herunterzaehlen (Kalendertage).
 VehicleDelivery.TIME_EPSILON = 0.0001
 

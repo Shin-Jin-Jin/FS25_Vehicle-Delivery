@@ -52,6 +52,7 @@
     <manufacturer name="CASEIH" region="NA" />
     <manufacturer name="CHALLENGER" region="NA" />
     <manufacturer name="CLAAS" region="EU" />
+    <manufacturer name="COLOMBO" region="SA" />
     <manufacturer name="CONVEYALL" region="NA" />
     <manufacturer name="DALBO" region="EU" />
     <manufacturer name="DAMCON" region="EU" />
@@ -208,6 +209,7 @@
     <manufacturer name="SIRCH" region="EU" />
     <manufacturer name="SKODA" region="EU" />
     <manufacturer name="SKYAGRICULTURE" region="EU" />
+    <manufacturer name="SOLA" region="EU" />
     <manufacturer name="STARA" region="SA" />
     <manufacturer name="STARKINDUSTRIES" region="NA" />
     <manufacturer name="STEMA" region="EU" />
